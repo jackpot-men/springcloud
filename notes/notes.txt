@@ -1,0 +1,22 @@
+1.Eureka概念
+    Register-服务注册
+        Client向Server注册时，会提供自身的元数据，ip，端口，运行状况指标的Url等。
+    Renew-服务续约
+        Client默认情况下每30秒发送一次心跳来进行服务续约。来保证client任然可用。server默认90秒没有收到心跳则会把对应client从注册表中删除。
+
+   源码解析eurekaClient注册过程
+        在com.netflix.discovery下有个DiscoverClient类实现了EurekaClient接口，它是一个单例模式，而EurekaClient继承了LookupService接口
+        在DiscoveryClient类中有一个服务注册的方法register(),通过http请求向EurekaServer注册，
+         register()方法被InstancelnfoReplicator类的run方法调用，
+         InstancelnfoReplicator 类是在 DiscoveryClient 初始化过程中使用的， 其中有一个
+         initScheduledTasks（） 方法 该方法主要开启了获取服务注册列表信息。如果需要向Eureka
+         Server注册，则开启注册，同时开启定时任向Eureka Server服务续约
+
+    eurekaServer源码解析
+        在eureka-corejar包下，com.netfix.eureka包有一个EurekaBootStrap类，BootStrapContext 类在程序启动时具有最先初始化权限。
+         PeerAwarelnstanceRegistryImpl类中有一个register方法，提供了服务注册，并将服务注册后同步其他server服务中
+         ApplicationResource类addlnstance方法提供了API接口给client通过http调用注册。
+
+    EurekaClient获取服务实例为什么慢
+       Eureka Client启动后，不是立即向EurekaServer注册的，而是有一个延迟想服务注册的时间
+        DefaultEurekaClientConfig 类默认为40秒

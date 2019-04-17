@@ -1,0 +1,11 @@
+feign 采用声明式API接口的风格，将javaHttp客户端绑定到它的内部，Feign的首要目标是将客户端调用变的简单
+
+feign的源码实现
+( 1) 首先通过＠EnableFeignClients 注解开启 FeignClient功能。只有这个注解存在，才
+ 会在程序启动时开启对＠FeignClient 注解的包扫描
+ (2 ）根据 Feign 实现接口，并在接口上面加上＠FeigClient注解
+ (3 ）程序启动后，会进行包扫描，扫描所有的＠ FeigClient 注的类，并将这些信息注入到IOC容器中
+ 4）当接口的方法被调用时 通过 JDK 的代理来生成 体的 RequestTemplate 模板对象
+5 根据RequestTemplate再生产Http请求的Request对象
+6Request对象交给Client去处理，其中Client的网络请求框架可以是HttpURLConnection，httpClient，OkHttp
+ 最后Client被封装到LoadBalanceClient类。这个类结合类Ribbon做到了负载
